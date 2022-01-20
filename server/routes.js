@@ -9,5 +9,6 @@ router.get('/', (req, res) => res.json({ foo: "bar" }));
 
 // recipes
 router.get('/recipes', RecipeController.all);
+router.get('/recipes/:id', RecipeController.all);
 
 module.exports = router;

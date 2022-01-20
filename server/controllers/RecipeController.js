@@ -1,16 +1,9 @@
-const { Recipe } = require('../models/Recipe');
+const { Recipe, RecipeFile} = require('../models/Recipe');
 
 module.exports = {
-
     async all(req, res) {
-        let recipes = await Recipe.findAll({
-            // attributes: ['street'],
-            // include: {
-            //     association: 'residente',
-            //     attributes: ['name']
-            // }
-        });
-
+        let recipes = await Recipe.findAll({});
+        let files = await RecipeFile
         res.json(recipes);
     }
 
