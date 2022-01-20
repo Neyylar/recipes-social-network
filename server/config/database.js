@@ -7,6 +7,7 @@ module.exports = {
   password: process.env.DB_PASSWORD || "",
   database: process.env.DB_DATABASE || "recipes-network",
   host: process.env.DB_HOST || "localhost",
+  port: 5433,
   dialect: process.env.DB_DIALECT || "postgres",
   
   // Configurar Seeds

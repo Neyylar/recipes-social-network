@@ -14,6 +14,7 @@ import moment from "moment";
 import NProgress from 'nprogress';
 import DateFnsUtils from '@date-io/date-fns'; // choose your lib
 import {MuiPickersUtilsProvider} from '@material-ui/pickers';
+import Navbar from "../components/App/Navbar";
 
 
 moment.locale("es");
@@ -64,6 +65,7 @@ class WebApp extends App {
                         <CssBaseline/>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <SnackbarProvider maxSnack={3}>
+                                <Navbar/>
                                 <div style={{position: 'absolute', top: 0}} id={"Home"}/>
                                 <Box display={'flex'} width={'100%'}>
                                     <div style={{width: '100%'}}>
