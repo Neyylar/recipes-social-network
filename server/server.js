@@ -3,7 +3,7 @@ const app = express();
 const sequelize = require('./database');
 
 // Setting
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 // Middleware
 // Para poder rellenar el req.body
