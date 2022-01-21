@@ -20,7 +20,7 @@ const baseTheme = {
             contrastText:'#fff'
         },
         secondary: {
-            main: '#66A5AD'
+            main: '#07575B'
         }
     },
     zIndex: {

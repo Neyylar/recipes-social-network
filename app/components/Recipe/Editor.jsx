@@ -6,11 +6,15 @@ import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import Box from "@material-ui/core/Box";
 import TextField from "@material-ui/core/TextField";
-import {CircularProgress} from "@material-ui/core";
+import {CardMedia, CircularProgress} from "@material-ui/core";
 import {useRouter} from "next/router";
 import {useSnackbar} from "notistack";
 import Backdrop from "@material-ui/core/Backdrop";
 import AddIcon from "@material-ui/icons/Add";
+import MaterialLink from "@material-ui/core/Link";
+import {Delete} from "@material-ui/icons";
+import Image from 'next/image';
+import baseConfig from "../../base.config";
 
 const useStyles = makeStyles((theme) => ({
     nameInput: {
@@ -32,12 +36,42 @@ const useStyles = makeStyles((theme) => ({
 
 const RecipeCreator = () => {
     const classes = useStyles(),
-        router = useRouter(), {enqueueSnackbar} = useSnackbar(), [loading, setLoading] = useState(false), [showTextInputErrors, setShowTextInputErrors] = useState(false), [pictures, setPictures] = useState([]), [tmpPicture, setTmpPicture] = useState(''), [name, setName] = useState(''), [description, setDescription] = useState(''), [steps, setSteps] = useState(''), [portions, setPortions] = useState(''), [phoneError, setPhoneError] = useState(false);
+        router = useRouter(),
+        {enqueueSnackbar} = useSnackbar(),
+        [loading, setLoading] = useState(false),
+        [showTextInputErrors, setShowTextInputErrors] = useState(false),
+        [pictures, setPictures] = useState([]),
+        [tmpPicture, setTmpPicture] = useState(''),
+        [name, setName] = useState(''),
+        [description, setDescription] = useState(''),
+        [steps, setSteps] = useState(''),
+        [portions, setPortions] = useState(''),
+        [phoneError, setPhoneError] = useState(false);
 
     const onSubmit = useCallback(event => {
         event.preventDefault();
         if (loading) return;
-    }, []);
+        const input = {
+            name, description, steps, portions
+        };
+        const submitData = async () => {
+            const response = await fetch(`${baseConfig.server.url}/recipes`, {
+                method: 'POST',
+                body: JSON.stringify(input),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            return await response.json();
+        }
+        setLoading(true);
+        submitData()
+            .then(response => {
+                console.log(response);
+            })
+            .catch(e => console.error(e))
+            .finally(() => setLoading(false));
+    }, [name, description, steps, portions, setLoading, loading]);
 
     const addPictureToArr = useCallback(() => {
         pictures.push(tmpPicture);
@@ -45,26 +79,53 @@ const RecipeCreator = () => {
         setTmpPicture('');
     }, [setPictures, pictures, tmpPicture, setTmpPicture]);
 
+    const deletePicture = useCallback((index) => {
+        const newArr = [...pictures];
+        newArr.splice(index, 1);
+        setPictures(newArr);
+    }, [setPictures, pictures]);
+
     return (
         <Box>
             <form onSubmit={onSubmit}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
+                        <Box>
+                            <img
+                                height="200"
+                                src={pictures.length > 0 ? pictures[0] : 'https://homechef.imgix.net/https%3A%2F%2Fasset.homechef.com%2Fuploads%2Fmeal%2Fplated%2F4896%2Fsalad4-aa062b86fac073f5d983645756d63818-aa062b86fac073f5d983645756d63818.png?ixlib=rails-1.1.0&w=850&auto=format&s=8d75ce0c54a1a9273ea19d8a8d254a12'}
+                                alt={`recipe_pic_alt`}
+                            />
+                        </Box>
+
                         <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
                             <TextField value={tmpPicture} onChange={event => setTmpPicture(event.target.value)}
                                        error={showTextInputErrors}
                                        helperText={showTextInputErrors ? "It needs a picture!" : ""}
-                                       required label={"Pictures"} type={"text"} name={"picture"}
+                                       label={"Pictures"} type={"text"} name={"picture"}
                                        className={classes.nameInput}
                                        autoComplete={"fname"} variant={"outlined"} fullWidth/>
                             <Box ml={'8px'}>
                                 <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
-                                        onClick={() => addPictureToArr()}><AddIcon/></Button>
+                                        onClick={addPictureToArr}><AddIcon/></Button>
                             </Box>
                         </Box>
-                        <Box display={'flex'}>
-                            {pictures.map((item, index) => <Typography key={index}>{item}</Typography>)}
-                        </Box>
+                        {pictures.length > 0 &&
+                            <Box display={'flex'} flexDirection={'column'} px={'4px'}
+                                 py={'8px'} mt={'8px'} borderRadius={8} border={1} borderColor={'primary'}
+                            >
+                                {pictures.map((item, index) =>
+                                    <Box key={index} display={'flex'} flexDirection={'row'} alignItems={'center'}
+                                         justifyContent={'space-between'}
+                                         borderTop={index === 0 ? 0 : 1} borderColor={'primary'} py={'4px'}>
+                                        <Typography component={"p"}>
+                                            <MaterialLink target={"_blank"} href={item}
+                                                          color={"secondary"}>{item}</MaterialLink>
+                                        </Typography>
+                                        <Button onClick={() => deletePicture(index)} variant={'contained'} size={'small'}
+                                                color={'primary'}><Delete/></Button>
+                                    </Box>)}
+                            </Box>}
                     </Grid>
 
                     <Grid item xs={12}>

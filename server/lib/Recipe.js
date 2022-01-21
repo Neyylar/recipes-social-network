@@ -52,13 +52,13 @@ class Recipe {
                 const prev = await this.getById(input.id);
                 if (prev) throw new Error(`La receta ${input.id} ya existe, use otro ID`);
             }
-            await model.Recipe.create(input);
-            const data = await this.getById(input.id);
+            const newRecipe = await model.Recipe.create(input);
+            //TODO setFiles
             //TODO setHashtags
             //TODO setCategories
             //TODO setUtensils
             //TODO setProducts
-            return data;
+            return newRecipe;
         } catch (error) {
             console.error(`0MHRXHMP - ${error}`);
         }

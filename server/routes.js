@@ -10,7 +10,7 @@ router.get('/', (req, res) => res.json({ foo: "bar" }));
 // recipes
 router.get('/recipes', RecipeController.recipes);
 router.get('/recipes/:id', RecipeController.recipe);
-router.post('/recipes/:id', RecipeController.createRecipe);
+router.post('/recipes', RecipeController.createRecipe);
 router.patch('/recipes/:id', RecipeController.updateRecipe);
 router.delete('/recipes/:id', RecipeController.deleteRecipe);
 router.get('/categories', RecipeController.categories);
