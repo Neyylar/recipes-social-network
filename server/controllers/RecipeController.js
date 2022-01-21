@@ -1,9 +1,8 @@
-const { Recipe, RecipeFile} = require('../models/Recipe');
+const recipe = require('../lib/Recipe');
 
 module.exports = {
     async all(req, res) {
-        let recipes = await Recipe.findAll({});
-        let files = await RecipeFile
+        const recipes = recipe.Recipe.list();
         res.json(recipes);
     }
 
