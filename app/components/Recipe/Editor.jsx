@@ -67,9 +67,15 @@ const RecipeCreator = () => {
         setLoading(true);
         submitData()
             .then(response => {
-                console.log(response);
+                if (response) {
+                    enqueueSnackbar(`Receta ${response.name} created Successfully!`, {variant: 'success'});
+                    router.replace('/recipes/[id]',`/recipes/${response.id}`);
+                }
             })
-            .catch(e => console.error(e))
+            .catch(e => {
+                console.error(e)
+                enqueueSnackbar(error.toString(), {variant: 'error'});
+            })
             .finally(() => setLoading(false));
     }, [name, description, steps, portions, setLoading, loading]);
 
