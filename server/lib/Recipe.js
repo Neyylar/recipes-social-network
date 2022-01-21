@@ -57,6 +57,7 @@ class Recipe {
             }
             const newRecipe = await model.Recipe.create(input);
             if (input.files && input.files.length > 0) await this.setFiles(newRecipe.id, input.files);
+            if (input.categories && input.categories.length > 0) await this.setCategories(newRecipe.id, input.categories);
             //TODO setFiles
             //TODO setHashtags
             //TODO setCategories
@@ -177,6 +178,20 @@ class Recipe {
             console.error(`TXUCD512 - ${error}`);
         }
     };
+
+    static setFiles = async (recipeId, files) => {
+        try {
+            const prev = (await this.getFiles(recipeId)).map(item => item.name);
+            const toAdd = files.filter(item => !prev.includes(item)),
+                toRemove = prev.filter(item => !files.includes(item));
+            if (toAdd.length === 0 && toRemove.length === 0) return false;
+            for (let x in toAdd) await this.addFile(recipeId, toAdd[x]);
+            for (let x in toRemove) await this.removeFile(recipeId, toRemove[x]);
+            return true;
+        } catch (error) {
+            console.error(`PCR20C3C - ${error}`);
+        }
+    }
 
     static getCategories = async (recipeId) => {
         try {

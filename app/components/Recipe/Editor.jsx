@@ -6,7 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import Box from "@material-ui/core/Box";
 import TextField from "@material-ui/core/TextField";
-import {CardMedia, CircularProgress} from "@material-ui/core";
+import {CardMedia, Chip, CircularProgress} from "@material-ui/core";
 import {useRouter} from "next/router";
 import {useSnackbar} from "notistack";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -15,6 +15,7 @@ import MaterialLink from "@material-ui/core/Link";
 import {Delete} from "@material-ui/icons";
 import Image from 'next/image';
 import baseConfig from "../../base.config";
+import CategoriesSelect from "../Category/Select";
 
 const useStyles = makeStyles((theme) => ({
     nameInput: {
@@ -45,8 +46,14 @@ const RecipeCreator = () => {
         [name, setName] = useState(''),
         [description, setDescription] = useState(''),
         [steps, setSteps] = useState(''),
-        [portions, setPortions] = useState(''),
-        [phoneError, setPhoneError] = useState(false);
+        [portions, setPortions] = useState(1),
+        [categories, setCategories] = useState([]),
+        [tmpCategory, setTmpCategory] = useState(null),
+        [hashtags, setHashtags] = useState([]),
+        [utensils, setUtensils] = useState([]),
+        [products, setProducts] = useState([]);
+
+    const validInputs = pictures.length > 0 && name.length > 3;
 
     const onSubmit = useCallback(event => {
         event.preventDefault();
@@ -85,11 +92,27 @@ const RecipeCreator = () => {
         setTmpPicture('');
     }, [setPictures, pictures, tmpPicture, setTmpPicture]);
 
-    const deletePicture = useCallback((index) => {
-        const newArr = [...pictures];
-        newArr.splice(index, 1);
-        setPictures(newArr);
-    }, [setPictures, pictures]);
+    const deleteItemFromArr = (itemIndex, arr, setArr) => {
+        const newArr = [...arr];
+        newArr.splice(itemIndex, 1);
+        setArr(newArr);
+    }
+    const addItemToArr = (newItem, arr, setArr) => {
+        if (!newItem) return;
+        if (typeof newItem === 'object') {
+            if (arr.find(item => item.id === newItem.id)) {
+                enqueueSnackbar(`This item was already added.`, {variant: 'warning'});
+                return;
+            }
+        } else {
+            if (arr.includes(newItem)) {
+                enqueueSnackbar(`This item was already added.`, {variant: 'warning'});
+                return;
+            }
+        }
+        arr.push(newItem);
+        setArr(arr);
+    }
 
     return (
         <Box>
@@ -113,7 +136,10 @@ const RecipeCreator = () => {
                                        autoComplete={"fname"} variant={"outlined"} fullWidth/>
                             <Box ml={'8px'}>
                                 <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
-                                        onClick={addPictureToArr}><AddIcon/></Button>
+                                        onClick={() => {
+                                            addItemToArr(tmpPicture, pictures, setPictures);
+                                            setTmpPicture('');
+                                        }}><AddIcon/></Button>
                             </Box>
                         </Box>
                         {pictures.length > 0 &&
@@ -126,9 +152,9 @@ const RecipeCreator = () => {
                                          borderTop={index === 0 ? 0 : 1} borderColor={'primary'} py={'4px'}>
                                         <Typography component={"p"}>
                                             <MaterialLink target={"_blank"} href={item}
-                                                          color={"secondary"}>{item}</MaterialLink>
+                                                          color={"secondary"} style={{wordBreak: 'break-word'}}>{item}</MaterialLink>
                                         </Typography>
-                                        <Button onClick={() => deletePicture(index)} variant={'contained'} size={'small'}
+                                        <Button onClick={() => deleteItemFromArr(index, pictures, setPictures)} variant={'contained'} size={'small'}
                                                 color={'primary'}><Delete/></Button>
                                     </Box>)}
                             </Box>}
@@ -141,10 +167,13 @@ const RecipeCreator = () => {
                     <Grid item xs={12}>
                         <Box mb={2} display={'flex'} alignItems={'center'} flexDirection={'row'}>
                             <Typography variant={'subtitle2'}>Portions Amount</Typography>
-                            <TextField value={portions} onChange={event => setPortions(event.target.value)}
+                            <TextField value={`${portions}`} onChange={event => setPortions(parseInt(event.target.value))}
                                        error={showTextInputErrors}
                                        helperText={showTextInputErrors ? "Should be a number!" : ""}
-                                       required label={"Portions"} type={"number"} name={"portions"}
+                                       required label={"Portions"}
+                                       InputProps={{ inputProps: { min: 1, max: 50 } }}
+                                       type={"number"}
+                                       name={"portions"}
                                        className={classes.nameInput}
                                        autoComplete={"fname"} variant={"outlined"} fullWidth/>
                         </Box>
@@ -166,7 +195,7 @@ const RecipeCreator = () => {
                         <TextField value={steps} onChange={event => setSteps(event.target.value)}
                                    error={showTextInputErrors}
                                    helperText={showTextInputErrors ? "" : ""}
-                                   required label={"Preparation steps"} type={"text"} name={"steps"}
+                                   label={"Preparation steps"} type={"text"} name={"steps"}
                                    className={classes.nameInput}
                                    autoComplete={"fname"} variant={"outlined"} fullWidth multiline rows={4}/>
                     </Grid>
@@ -176,12 +205,34 @@ const RecipeCreator = () => {
                     </Grid>
 
                     <Grid item xs={12}>
+                        <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
+                            <Box flex={1}>
+                                <CategoriesSelect value={tmpCategory} onChange={setTmpCategory}/>
+                            </Box>
+                            <Box ml={'8px'}>
+                                <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
+                                        onClick={() => {
+                                            addItemToArr(tmpCategory, categories, setCategories);
+                                            setTmpCategory(null);
+                                        }}><AddIcon/></Button>
+                            </Box>
+                        </Box>
+                        {categories.length > 0 &&
+                            <Box display={'flex'} flexDirection={'row'}>
+                                {categories.map((item, index) => <Box key={index} mr={1}>
+                                        <Chip label={item.name} onDelete={() => deleteItemFromArr(index, categories, setCategories)}/>
+                                </Box>
+                                )}
+                            </Box>}
+                    </Grid>
+
+                    <Grid item xs={12}>
                         <Divider/>
                     </Grid>
 
                     <Grid item xs={12}>
                         <Button
-                            disabled={loading || phoneError || showTextInputErrors} type={"submit"}
+                            disabled={loading || showTextInputErrors || !validInputs} type={"submit"}
                             disableElevation
                             className={classes.submitButton}
                             variant={"contained"} color={"primary"}
