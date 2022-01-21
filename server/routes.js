@@ -8,7 +8,15 @@ const RecipeController = require('./controllers/RecipeController');
 router.get('/', (req, res) => res.json({ foo: "bar" }));
 
 // recipes
-router.get('/recipes', RecipeController.all);
-router.get('/recipes/:id', RecipeController.all);
+router.get('/recipes', RecipeController.recipes);
+router.get('/recipes/:id', RecipeController.recipe);
+router.post('/recipes/:id', RecipeController.createRecipe);
+router.patch('/recipes/:id', RecipeController.updateRecipe);
+router.delete('/recipes/:id', RecipeController.deleteRecipe);
+router.get('/categories', RecipeController.categories);
+router.get('/hashtags', RecipeController.hashtags);
+router.get('/utensils', RecipeController.utensils);
+router.get('/measures', RecipeController.measures);
+router.get('/products', RecipeController.products);
 
 module.exports = router;

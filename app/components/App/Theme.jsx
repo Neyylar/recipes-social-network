@@ -14,13 +14,13 @@ const baseTheme = {
     },
     palette: {
         primary: {
-            main: '#FF8E12',
-            light:'#FF8E12',
-            dark:'#cf730e',
+            main: '#66A5AD',
+            light: '#07575B',
+            dark: '#003B46',
             contrastText:'#fff'
         },
         secondary: {
-            main: '#FF8E12'
+            main: '#66A5AD'
         }
     },
     zIndex: {
@@ -80,7 +80,14 @@ const baseTheme = {
         },
         MuiAppBar: {
             root: {
-                borderBottom: '2px solid #00B594'
+                //borderBottom: '2px solid #00B594'
+            }
+        },
+        MuiToolbar: {
+            root: {
+                minHeight: '48px !important',
+                paddingLeft: '12px !important',
+                paddingRight: '12px !important'
             }
         },
         MuiCardHeader: {
@@ -122,7 +129,7 @@ const Theme = createTheme({
                 paper: '#090910'
             },
             primary: {
-                main: '#FF8E12'
+                main: '#07575B'
             }
         },
         overrides: {

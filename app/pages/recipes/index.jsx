@@ -5,6 +5,9 @@ import Container from "@material-ui/core/Container";
 import {makeStyles} from "@material-ui/core/styles";
 import Head from "next/head";
 import {Card, CardActionArea, CardContent, CardMedia, Grid} from "@material-ui/core";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Link from "next/link";
+import MaterialLink from "@material-ui/core/Link";
 
 const useStyles = makeStyles(theme => ({
     breadcrumb: {
@@ -21,10 +24,18 @@ const RecipesPage = ({initialData}) => {
     const classes = useStyles(),
         [recipes, setRecipes] = useState(initialData ? initialData.recipes : []);
 
-    return <Container maxWidth={'xl'} style={{marginTop: '85px'}}>
+    return <Container maxWidth={'xl'} style={{}}>
         <Head>
             <title>recipes-network</title>
         </Head>
+        <Box mb={"24px"}>
+            <Breadcrumbs>
+                <Link href={"/"} scroll passHref>
+                    <MaterialLink>Dashboard</MaterialLink>
+                </Link>
+                <Typography>Recipes</Typography>
+            </Breadcrumbs>
+        </Box>
 
         <Grid container spacing={3}>
             {recipes.map((recipe, index) => <Grid item xs={4}>

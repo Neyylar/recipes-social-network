@@ -1,6 +1,6 @@
 /*_document.jsx*/
 import React from 'react';
-import Document, {Head, Main, NextScript} from 'next/document';
+import Document, {Head, Html, Main, NextScript} from 'next/document';
 import {ServerStyleSheets} from '@material-ui/core/styles';
 import App from '../components/App';
 import moment from "moment";
@@ -17,7 +17,7 @@ class WebDocument extends Document {
     render() {
 
         return (
-            <html lang="en">
+            <Html lang="en">
             <Head>
                 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap"
                       rel="stylesheet"/>
@@ -41,7 +41,7 @@ class WebDocument extends Document {
             <Main/>
             <NextScript/>
             </body>
-            </html>
+            </Html>
         );
     }
 
