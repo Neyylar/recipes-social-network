@@ -1,4 +1,7 @@
-const model = require('../models/Recipe');
+const modelFile = require('../models/File'),
+    model = require('../models/Recipe');
+const {FileStatus} = require("../models/File");
+const faker = require("@faker-js/faker");
 
 class Recipe {
 
@@ -53,6 +56,7 @@ class Recipe {
                 if (prev) throw new Error(`La receta ${input.id} ya existe, use otro ID`);
             }
             const newRecipe = await model.Recipe.create(input);
+            if (input.files && input.files.length > 0) await this.setFiles(newRecipe.id, input.files);
             //TODO setFiles
             //TODO setHashtags
             //TODO setCategories
@@ -93,6 +97,20 @@ class Recipe {
         }
     };
 
+    static setFiles = async (recipeId, files) => {
+        try {
+            const prev = (await this.getFiles(recipeId)).map(item => item.name);
+            const toAdd = files.filter(item => !prev.includes(item)),
+                toRemove = prev.filter(item => !files.includes(item));
+            if (toAdd.length === 0 && toRemove.length === 0) return false;
+            for (let x in toAdd) await this.addFile(recipeId, toAdd[x]);
+            for (let x in toRemove) await this.removeFile(recipeId, toRemove[x]);
+            return true;
+        } catch (error) {
+            console.error(`PCR20C3C - ${error}`);
+        }
+    }
+
     static getFiles = async (recipeId) => {
         try {
             let data = await model.RecipeFile.findAll({
@@ -102,6 +120,37 @@ class Recipe {
             return data;
         } catch (error) {
             console.error(`TXUCD5D0 - ${error}`);
+        }
+    };
+
+    static addFile = async (recipeId, file) => {
+        try {
+            if (!recipeId || !file) return false;
+            const okStatus = await modelFile.FileStatus.findOne({where: {name: 'Ok'}});
+            const newFile = await modelFile.File.create({
+                name: file,
+                url: file,
+                size: 100,
+                statusId: okStatus.id,
+            });
+            await model.RecipeFile.create({
+                recipeId, fileId: newFile.id
+            });
+            return true;
+        } catch (error) {
+            console.error(`TXYP4URG - ${error}`);
+        }
+    };
+
+    static removeFile = async (recipeId, file) => {
+        try {
+            if (!recipeId || !file) return false;
+            // await model.RecipeFile.destroy({
+            //     where: {recipeId, file}
+            // });
+            return true;
+        } catch (error) {
+            console.error(`8DCUXMC3 - ${error}`);
         }
     };
 

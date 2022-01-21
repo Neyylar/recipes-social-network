@@ -52,7 +52,7 @@ const RecipeCreator = () => {
         event.preventDefault();
         if (loading) return;
         const input = {
-            name, description, steps, portions
+            name, description, steps, portions, files: pictures
         };
         const submitData = async () => {
             const response = await fetch(`${baseConfig.server.url}/recipes`, {
@@ -73,11 +73,11 @@ const RecipeCreator = () => {
                 }
             })
             .catch(e => {
-                console.error(e)
-                enqueueSnackbar(error.toString(), {variant: 'error'});
+                console.error(e);
+                enqueueSnackbar(e.toString(), {variant: 'error'});
             })
             .finally(() => setLoading(false));
-    }, [name, description, steps, portions, setLoading, loading]);
+    }, [name, description, steps, portions, setLoading, loading, pictures]);
 
     const addPictureToArr = useCallback(() => {
         pictures.push(tmpPicture);
