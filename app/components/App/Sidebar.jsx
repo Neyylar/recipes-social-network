@@ -206,6 +206,14 @@ const Sidebar = ({children}) => {
                             <ListItemText primary={"Categories"}/>
                         </ListItem>
                     </Link>
+                    <Link href={"/hashtags"} passHref scroll>
+                        <ListItem button selected={router.pathname === '/hashtags'} onClick={() => setOpen(false)}>
+                            <ListItemIcon>
+                                <Class/>
+                            </ListItemIcon>
+                            <ListItemText primary={"Hashtags"}/>
+                        </ListItem>
+                    </Link>
                 </List>
             </Box>
         </Drawer>
