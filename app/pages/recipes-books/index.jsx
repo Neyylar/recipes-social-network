@@ -4,7 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import {makeStyles} from "@material-ui/core/styles";
 import Head from "next/head";
-import {Card, CardActionArea, CardContent, CardMedia, Grid} from "@material-ui/core";
+import {Card, CardActionArea, CardContent, CardMedia, Grid, useTheme} from "@material-ui/core";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "next/link";
 import MaterialLink from "@material-ui/core/Link";
@@ -23,6 +23,7 @@ const useStyles = makeStyles(theme => ({
 const RecipeBooksPage = ({initialData}) => {
 
     const classes = useStyles(),
+        theme = useTheme(),
         [recipesBooks, setRecipesBooks] = useState(initialData ? initialData.recipesBooks : []);
 
     return <Container maxWidth={'xl'} style={{}}>
@@ -39,23 +40,43 @@ const RecipeBooksPage = ({initialData}) => {
         </Box>
 
         <Grid container spacing={3}>
-            {recipesBooks?.map((book, index) => <Grid key={index} item xs={4}>
-                <Card sx={{maxWidth: 345}}>
-                    <CardActionArea href={`/recipes-books/${book.id}`}>
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={baseConfig.images.recipeDefault}
-                            alt={`recipe_pic_${index}`}
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5">
-                                {book.name}
-                            </Typography>
-                        </CardContent>
-                    </CardActionArea>
-                </Card>
-            </Grid>)}
+            {recipesBooks?.map((book, index) => {
+                let images = book.recipes?.length > 0 ? book.recipes.reduce((acc, item) => {
+                    if (item.files?.length > 0) acc.push(item.files[0].url);
+                    return acc;
+                }, []) : [];
+                images = images.length > 0 ? images : [baseConfig.images.recipeDefault];
+                images = images.slice(0, 4);
+                const getGridWidth = (_index) => images.length > 1 ? ((images.length === 3 && _index === 2) ? 12 : 6) : 12;
+                return <Grid key={index} item xs={4}>
+                    <Card sx={{maxWidth: 345}}>
+                        <Link href={`/recipes-books/${book.id}`} Component={CardActionArea}>
+                            <Box>
+                            <Box height={'140px'}>
+                                <Grid container spacing={1} style={{backgroundColor: `${theme.palette.primary.main}BB`}}>
+                                    {images.map((item, indexImage) =>
+                                        <Grid key={indexImage} item xs={getGridWidth(indexImage)}>
+                                            <CardMedia
+                                                component="img"
+                                                height={images.length < 3 ? 140 : 70}
+                                                image={item}
+                                                alt={`recipe_pic_${indexImage}`}
+                                            />
+                                        </Grid>
+                                    )}
+                                </Grid>
+                            </Box>
+
+                            <CardContent>
+                                <Typography gutterBottom variant="h5">
+                                    {book.name}
+                                </Typography>
+                            </CardContent>
+                            </Box>
+                        </Link>
+                    </Card>
+                </Grid>;
+            })}
         </Grid>
     </Container>
 

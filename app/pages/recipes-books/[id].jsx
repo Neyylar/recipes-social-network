@@ -4,11 +4,10 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import {makeStyles} from "@material-ui/core/styles";
 import Head from "next/head";
-import {Card, CardActionArea, CardContent, CardMedia, Grid} from "@material-ui/core";
+import {Card, CardActionArea, CardContent, CardMedia, Divider, Grid} from "@material-ui/core";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "next/link";
 import MaterialLink from "@material-ui/core/Link";
-import {useRouter} from "next/router";
 import baseConfig from "../../base.config";
 
 const useStyles = makeStyles(theme => ({
@@ -23,9 +22,8 @@ const useStyles = makeStyles(theme => ({
 
 const RecipeBookPage = ({initialData}) => {
 
-
     const classes = useStyles(),
-        [recipes, setRecipes] = useState(initialData ? initialData.recipes : []);
+        [recipesBook, setRecipesBook] = useState(initialData ? initialData.recipesBook : null);
 
     return <Container maxWidth={'xl'} style={{}}>
         <Head>
@@ -39,45 +37,50 @@ const RecipeBookPage = ({initialData}) => {
                 <Link href={"/recipes"} scroll passHref>
                     <MaterialLink>Recipes Books</MaterialLink>
                 </Link>
-                <Typography>Recipes Book - {recipe?.name}</Typography>
+                <Typography>Recipes Book - {recipesBook?.name}</Typography>
             </Breadcrumbs>
         </Box>
 
-        <Grid container spacing={3}>
-            {recipes.map((recipe, index) => <Grid item xs={4}>
-                <Card sx={{maxWidth: 345}}>
-                    <CardActionArea href={`/recipes/${index}`}>
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={recipe.files && recipe.files.length > 0 ? recipe.files[0].url : 'https://homechef.imgix.net/https%3A%2F%2Fasset.homechef.com%2Fuploads%2Fmeal%2Fplated%2F4896%2Fsalad4-aa062b86fac073f5d983645756d63818-aa062b86fac073f5d983645756d63818.png?ixlib=rails-1.1.0&w=850&auto=format&s=8d75ce0c54a1a9273ea19d8a8d254a12'}
-                            alt={`recipe_pic_${index}`}
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                {recipe.name}
-                                data
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                {recipe.description}
-                            </Typography>
-                        </CardContent>
-                    </CardActionArea>
-                </Card>
-            </Grid>)}
-        </Grid>
+        <Box>
+            <Typography variant={'h2'}>{recipesBook?.name}</Typography>
+            <Box mb={2}>
+                <Divider />
+            </Box>
+            <Grid container spacing={3}>
+                {recipesBook?.recipes?.map((recipe, index) => <Grid key={index} item xs={4}>
+                    <Card sx={{maxWidth: 345}}>
+                        <CardActionArea href={`/recipes/${recipe.id}`}>
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={recipe.files && recipe.files.length > 0 ? recipe.files[0].url : baseConfig.images.recipeDefault}
+                                alt={`recipe_pic_${index}`}
+                            />
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    {recipe.name}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {recipe.description}
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </Grid>)}
+            </Grid>
+        </Box>
     </Container>
 
 };
 
-RecipeBookPage.getInitialProps = async ({req}) => {
+RecipeBookPage.getInitialProps = async (ctx) => {
     try {
         const id = ctx.query ? ctx.query.id : null;
         const res = await fetch(`${baseConfig.server.url}/recipes-books/${id}`);
-        const recipes = await res.json();
+        const recipesBook = await res.json();
         return {
             initialData: {
-                recipes
+                recipesBook
             }
         }
     } catch (error) {

@@ -48,6 +48,7 @@ const DefaultSelect = ({
                               inputProps = {},
                               fetchRoute,
                               customIcon = <Book/>,
+                              withPictures,
                               variant = 'filled',
                               required = false,
                               used = [],
@@ -114,6 +115,14 @@ const DefaultSelect = ({
                     <Grid container alignItems="center" spacing={2}>
                         <Grid item>
                             {customIcon}
+                            {withPictures &&
+                                <img
+                                    width="48"
+                                    height="48"
+                                    src={option.files?.length > 0 ? option.files[0].url : baseConfig.images.recipeDefault}
+                                    alt={`recipe_pic_alt`}
+                                    style={{marginRight: '8px'}}
+                                />}
                         </Grid>
                         <Grid item xs>
                             <Typography className={classes.title} variant={"body1"}>

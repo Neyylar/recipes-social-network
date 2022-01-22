@@ -4,8 +4,9 @@ const recipe = require("../lib/Recipe");
 module.exports = {
     async recipesBooks(req, res) {
         const data = await recipesBook.RecipesBook.list();
-        if (data && data.recipes && data.recipes.length > 0) {
-            data.recipes = await recipe.Recipe.fullFetchList(data.recipes);
+        for (let x in data) data[x] = {
+            ...data[x],
+            recipes: data[x].recipes && data[x].recipes.length > 0 ? await recipe.Recipe.fullFetchList(data[x].recipes) : []
         }
         res.json(data);
     },

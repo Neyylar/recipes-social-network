@@ -112,14 +112,8 @@ const RecipesBookCreator = () => {
                             <Box flex={1}>
                                 <DefaultSelect
                                     fetchRoute={'recipes'}
-                                    customIcon={<Box>
-                                        <img
-                                            width="48"
-                                            height="48"
-                                            src={baseConfig.images.recipeDefault}
-                                            alt={`recipe_pic_alt`}
-                                        />
-                                    </Box>}
+                                    customIcon={null}
+                                    withPictures
                                     value={tmpRecipe}
                                     onChange={setTmpRecipe}
                                 />
@@ -136,11 +130,18 @@ const RecipesBookCreator = () => {
                                 {recipes.map((item, index) =>
                                     <Box key={index} display={'flex'} flexDirection={'row'} alignItems={'center'}
                                          justifyContent={'space-between'}
-                                         borderTop={index === 0 ? 0 : 1} borderColor={'primary'} py={'4px'}>
-                                        <Typography component={"p"}>
-                                            <MaterialLink target={"_blank"} href={item}
-                                                          color={"secondary"} style={{wordBreak: 'break-word'}}>{item}</MaterialLink>
-                                        </Typography>
+                                         borderTop={index === 0 ? 0 : 1} borderColor={'primary'} py={'4px'}
+                                    >
+                                        <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
+                                            <img
+                                                width="48"
+                                                height="48"
+                                                src={item.files?.length > 0 ? item.files[0].url : baseConfig.images.recipeDefault}
+                                                alt={`recipe_pic_alt${index}`}
+                                                style={{marginRight: '8px'}}
+                                            />
+                                            <Typography variant={'body1'}>{item.name}</Typography>
+                                        </Box>
                                         <Button onClick={() => deleteRecipe(index)} variant={'contained'} size={'small'}
                                                 color={'primary'}><Delete/></Button>
                                     </Box>)}
