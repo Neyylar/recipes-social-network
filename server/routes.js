@@ -14,8 +14,17 @@ router.get('/recipes/:id', RecipeController.recipe);
 router.post('/recipes', RecipeController.createRecipe);
 router.patch('/recipes/:id', RecipeController.updateRecipe);
 router.delete('/recipes/:id', RecipeController.deleteRecipe);
+
 router.get('/categories', RecipeController.categories);
+router.post('/categories', RecipeController.createCategory);
+router.patch('/categories/:id', RecipeController.updateCategory);
+router.delete('/categories/:id', RecipeController.deleteCategory);
+
 router.get('/hashtags', RecipeController.hashtags);
+router.post('/hashtags', RecipeController.createHashtag);
+router.patch('/hashtags/:id', RecipeController.updateHashtag);
+router.delete('/hashtags/:id', RecipeController.deleteHashtag);
+
 router.get('/utensils', RecipeController.utensils);
 router.get('/measures', RecipeController.measures);
 router.get('/products', RecipeController.products);

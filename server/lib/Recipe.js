@@ -355,6 +355,42 @@ class Hashtag {
             console.error(`ID1MPKX7 - ${error}`);
         }
     };
+
+    static create = async (input) => {
+        try {
+            if (input.id) {
+                const prev = await this.getById(input.id);
+                if (prev) throw new Error(`Hashtag ${input.id} already exist, use another ID`);
+            }
+            return await model.Hashtag.create(input);
+        } catch (error) {
+            console.error(`0MH4XHMP - ${error}`);
+        }
+    };
+
+    static update = async (input) => {
+        try {
+            if (!input.id) throw new Error(`No se encontró el ID de hashtag`);
+            const prev = await this.getById(input.id);
+            if (!prev) throw new Error(`La receta ${input.id} no existe`);
+            await model.Hashtag.update(input, {where: {id: input.id}});
+            const data = await this.getById(input.id);
+            return data;
+        } catch (error) {
+            console.error(`E4Y2UT22 - ${error}`);
+        }
+    };
+
+    static delete = async (id) => {
+        try {
+            const prev = await this.getById(id);
+            if (!prev) return false;
+            await model.Hashtag.destroy({where: {id}});
+            return true;
+        } catch (error) {
+            console.error(`45M86D5R - ${error}`);
+        }
+    };
 }
 
 class Utensil {
@@ -419,6 +455,42 @@ class Category {
             return data ? data : [];
         } catch (error) {
             console.error(`ZDFMPKX7 - ${error}`);
+        }
+    };
+
+    static create = async (input) => {
+        try {
+            if (input.id) {
+                const prev = await this.getById(input.id);
+                if (prev) throw new Error(`Category ${input.id} already exist, use another ID`);
+            }
+            return await model.Category.create(input);
+        } catch (error) {
+            console.error(`0MH48HMP - ${error}`);
+        }
+    };
+
+    static update = async (input) => {
+        try {
+            if (!input.id) throw new Error(`No se encontró el ID de category`);
+            const prev = await this.getById(input.id);
+            if (!prev) throw new Error(`La receta ${input.id} no existe`);
+            await model.Category.update(input, {where: {id: input.id}});
+            const data = await this.getById(input.id);
+            return data;
+        } catch (error) {
+            console.error(`E4Y7UT22 - ${error}`);
+        }
+    };
+
+    static delete = async (id) => {
+        try {
+            const prev = await this.getById(id);
+            if (!prev) return false;
+            await model.Category.destroy({where: {id}});
+            return true;
+        } catch (error) {
+            console.error(`45M96D5R - ${error}`);
         }
     };
 }
