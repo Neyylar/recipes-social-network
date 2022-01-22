@@ -4,21 +4,16 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import {makeStyles} from "@material-ui/core/styles";
 import Head from "next/head";
-import {
-    Button,
-    Card,
-    CardActionArea,
-    CardContent,
-    CardMedia,
-    Chip,
-    Grid,
-    ListItem,
-    ListItemText
-} from "@material-ui/core";
+import Slider from 'react-slick'
+import baseConfig from "../../base.config";
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
+import {Card, CardContent, Chip, Grid, ListItem, ListItemText} from "@material-ui/core";
 import {useRouter} from "next/router";
-import AddIcon from "@material-ui/icons/Add";
-import TextField from "@material-ui/core/TextField";
 import List from "@material-ui/core/List";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Link from "next/link";
+import MaterialLink from "@material-ui/core/Link";
 
 const useStyles = makeStyles(theme => ({
     breadcrumb: {
@@ -35,73 +30,100 @@ const RecipePage = ({initialData}) => {
     const classes = useStyles(),
         [recipe, setRecipe] = useState(initialData ? initialData.recipe : {});
 
-    return <Container maxWidth={'xl'} style={{marginTop: '85px'}}>
+    const sliderSettings = {
+        dots: true,
+        autoplay: true,
+        autoplaySpeed: 8000,
+        infinite: true,
+        speed: 500,
+    };
+
+
+    return <Container maxWidth={'lg'} style={{}}>
         <Head>
-            <title>recipes-network</title>
+            <title>Create recipe</title>
         </Head>
-        <Button color="inherit" href={'/recipes/'}>Go back</Button>
-            <Card sx={{maxWidth: 800}}>
-                {recipe?.files.map((file, index) =>
-                <CardMedia
-                    component="img"
-                    height="400"
-                    image={file ? file.url : 'https://homechef.imgix.net/https%3A%2F%2Fasset.homechef.com%2Fuploads%2Fmeal%2Fplated%2F4896%2Fsalad4-aa062b86fac073f5d983645756d63818-aa062b86fac073f5d983645756d63818.png?ixlib=rails-1.1.0&w=850&auto=format&s=8d75ce0c54a1a9273ea19d8a8d254a12'}
-                    alt={`${asPath}/${index}`}
-                />)}
+        <Box mb={"24px"}>
+            <Breadcrumbs>
+                <Link href={"/"} scroll passHref>
+                    <MaterialLink>Dashboard</MaterialLink>
+                </Link>
+                <Link href={"/recipes"} scroll passHref>
+                    <MaterialLink>Recipes</MaterialLink>
+                </Link>
+                <Typography>Recipe - {recipe?.name}</Typography>
+            </Breadcrumbs>
+        </Box>
 
-                <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                        {recipe?.name}
-                    </Typography>
-                    <Typography  variant="body2" color="text.secondary">
-                        {recipe?.preparationTime}
-                        {recipe?.portions}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        {recipe?.description}
-                    </Typography>
-                    <Box ml={'8px'} mt={'2px'}>
-                        <Typography variant="body2" color="text.secondary">
-                            {recipe?.steps}
+        <Grid container>
+            <Grid item xs={12}>
+                <Card>
+                    <Box style={{width: '100%'}}>
+                        <Slider {...sliderSettings}>
+                            {recipe?.files.map((file, index) =>
+                                <Box key={index} style={{backgroundColor: '#000'}}>
+                                    <Box
+                                        style={{
+                                            height: '500px',
+                                            background: `url(${file ? file.url : baseConfig.images.recipeDefault}) center no-repeat`,
+                                        }}
+                                    />
+                                </Box>
+                            )}
+                        </Slider>
+                    </Box>
+                    <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">
+                            {recipe?.name}
                         </Typography>
-                    </Box>
-                    <Box mt ={'2px'}>
-                        {recipe?.hashtags.map(({id, name}) =>
-                            <Chip label={name}/>
-                        )}
-                    </Box>
-                    <Box>
-                        {recipe?.categories.map(({name}) =>
-                            <Chip label={name}/>
-                        )}
-                    </Box>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <List>
-                                {recipe?.products.map(({id, name}) =>
-                                <ListItem disablePadding color={"primary"}>
-                                    <ListItemText primary={name} />
-                                </ListItem>
-                                )}
-                            </List>
+                        <Typography variant="body2" color={"secondary"}>
+                            {recipe?.preparationTime}
+                            {recipe?.portions}
+                        </Typography>
+                        <Typography variant="body2" color={"secondary"}>
+                            {recipe?.description}
+                        </Typography>
+                        <Box ml={'8px'} mt={'2px'}>
+                            <Typography variant="body2" color={"secondary"}>
+                                {recipe?.steps}
+                            </Typography>
+                        </Box>
+                        <Box mt={'2px'}>
+                            {recipe?.hashtags.map(({id, name}) =>
+                                <Chip label={name}/>
+                            )}
+                        </Box>
+                        <Box>
+                            {recipe?.categories.map(({name}) =>
+                                <Chip label={name}/>
+                            )}
+                        </Box>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <List>
+                                    {recipe?.products.map(({id, name}) =>
+                                        <ListItem disablePadding color={"primary"}>
+                                            <ListItemText primary={name}/>
+                                        </ListItem>
+                                    )}
+                                </List>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <List>
+                                    {recipe?.utensils.map(({id, name}) =>
+                                        <ListItem disablePadding color={"secondary"}>
+                                            <ListItemText primary={name}/>
+                                        </ListItem>
+                                    )}
+                                </List>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={6}>
-                            <List>
-                                {recipe?.utensils.map(({id, name}) =>
-                                    <ListItem disablePadding color={"secondary"}>
-                                        <ListItemText primary={name} />
-                                    </ListItem>
-                                )}
-                            </List>
-                        </Grid>
-                    </Grid>
 
 
-
-
-
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            </Grid>
+        </Grid>
     </Container>
 
 };
