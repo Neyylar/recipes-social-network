@@ -41,7 +41,7 @@ const RecipePage = ({initialData}) => {
 
     return <Container maxWidth={'lg'} style={{}}>
         <Head>
-            <title>Create recipe</title>
+            <title>{recipe?.name} - recipes-network</title>
         </Head>
         <Box mb={"24px"}>
             <Breadcrumbs>
@@ -131,7 +131,7 @@ const RecipePage = ({initialData}) => {
 RecipePage.getInitialProps = async (ctx) => {
     try {
         const id = ctx.query ? ctx.query.id : null;
-        const res = await fetch(`http://localhost:4000/recipes/${id}`);
+        const res = await fetch(`${baseConfig.server.url}/recipes/${id}`);
         const recipe = await res.json();
         return {
             initialData: {

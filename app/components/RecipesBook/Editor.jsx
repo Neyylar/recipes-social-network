@@ -34,41 +34,24 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const RecipeCreator = () => {
+const RecipesBookCreator = () => {
     const classes = useStyles(),
         router = useRouter(),
         {enqueueSnackbar} = useSnackbar(),
         [loading, setLoading] = useState(false),
         [showTextInputErrors, setShowTextInputErrors] = useState(false),
-        [pictures, setPictures] = useState([]),
-        [tmpPicture, setTmpPicture] = useState(''),
         [name, setName] = useState(''),
-        [description, setDescription] = useState(''),
-        [steps, setSteps] = useState(''),
-        [portions, setPortions] = useState(1),
-        [categories, setCategories] = useState([]),
-        [tmpCategory, setTmpCategory] = useState(null),
-        [hashtags, setHashtags] = useState([]),
-        [tmpHashtag, setTmpHashtag] = useState(null),
-        [utensils, setUtensils] = useState([]),
-        [tmpUtensil, setTmpUtensil] = useState(null),
-        [products, setProducts] = useState([]),
-        [tmpProduct, setTmpProduct] = useState(null);
+        [recipes, setRecipes] = useState([]),
+        [tmpRecipe, setRecipe] = useState(null);
 
-    const validInputs = pictures.length > 0 && name.length > 3;
+    const validInputs = recipes.length > 0 && name.length > 3;
 
     const onSubmit = useCallback(event => {
         event.preventDefault();
         if (loading) return;
         const input = {
             name,
-            description,
-            steps,
-            portions,
-            files: pictures,
-            hashtags: hashtags.map(({id}) => id),
-            categories: categories.map(({id}) => id),
-            utensils: utensils.map(({id}) => id),
+            recipes: recipes.map(({id}) => id),
         };
         const submitData = async () => {
             const response = await fetch(`${baseConfig.server.url}/recipes`, {
@@ -324,4 +307,4 @@ const RecipeCreator = () => {
         </Box>);
 }
 
-export default RecipeCreator;
+export default RecipesBookCreator;

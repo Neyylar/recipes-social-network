@@ -8,6 +8,7 @@ import {Card, CardActionArea, CardContent, CardMedia, Grid} from "@material-ui/c
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "next/link";
 import MaterialLink from "@material-ui/core/Link";
+import baseConfig from "../../base.config";
 
 const useStyles = makeStyles(theme => ({
     breadcrumb: {
@@ -38,25 +39,27 @@ const RecipesPage = ({initialData}) => {
         </Box>
 
         <Grid container spacing={3}>
-            {recipes.map((recipe, index) => <Grid item xs={4}>
+            {recipes.map((recipe, index) => <Grid key={index} item xs={4}>
                 <Card sx={{maxWidth: 345}}>
-                    <CardActionArea href={`/recipes/${index}`}>
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={recipe.files && recipe.files.length > 0 ? recipe.files[0].url : 'https://homechef.imgix.net/https%3A%2F%2Fasset.homechef.com%2Fuploads%2Fmeal%2Fplated%2F4896%2Fsalad4-aa062b86fac073f5d983645756d63818-aa062b86fac073f5d983645756d63818.png?ixlib=rails-1.1.0&w=850&auto=format&s=8d75ce0c54a1a9273ea19d8a8d254a12'}
-                            alt={`recipe_pic_${index}`}
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                {recipe.name}
-                                data
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                {recipe.description}
-                            </Typography>
-                        </CardContent>
-                    </CardActionArea>
+                    <Link href={`/recipes/${recipe.id}`} component={CardActionArea}>
+                        <Box>
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={recipe.files && recipe.files.length > 0 ? recipe.files[0].url : baseConfig.images.recipeDefault}
+                                alt={`recipe_pic_${index}`}
+                            />
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    {recipe.name}
+                                    data
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {recipe.description}
+                                </Typography>
+                            </CardContent>
+                        </Box>
+                    </Link>
                 </Card>
             </Grid>)}
         </Grid>
@@ -66,7 +69,7 @@ const RecipesPage = ({initialData}) => {
 
 RecipesPage.getInitialProps = async ({req}) => {
     try {
-        const res = await fetch('http://localhost:4000/recipes');
+        const res = await fetch(`${baseConfig.server.url}/recipes`);
         const recipes = await res.json();
         return {
             initialData: {

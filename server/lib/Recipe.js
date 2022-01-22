@@ -3,17 +3,20 @@ const modelFile = require('../models/File'),
 
 class Recipe {
 
-    static fullFetch = async (data) => data ? ({
+    static fullFetch = async (data, scope = 'simple') => data ? scope = 'simple' ? ({
             ...data,
             files: await this.getFiles(data.id),
-            hashtags: await this.getHashtags(data.id),
-            utensils: await this.getUtensils(data.id),
-            categories: await this.getCategories(data.id),
-            products: await this.getProducts(data.id),
-        }) : null;
+        }) : ({
+        ...data,
+        files: await this.getFiles(data.id),
+        hashtags: await this.getHashtags(data.id),
+        utensils: await this.getUtensils(data.id),
+        categories: await this.getCategories(data.id),
+        products: await this.getProducts(data.id),
+    }) : null;
 
-    static fullFetchList = async (data) => {
-        for (let x in data) data[x] = await this.fullFetch(data[x]);
+    static fullFetchList = async (data, scope = 'simple') => {
+        for (let x in data) data[x] = await this.fullFetch(data[x], scope);
         return data;
     };
 
@@ -23,7 +26,7 @@ class Recipe {
                 where: {id},
             });
             if (data) data = data.get({plain: true});
-            return await this.fullFetch(data);
+            return await this.fullFetch(data, 'full');
         } catch (error) {
             console.error(`WYD4T4D8 - ${error}`);
         }
@@ -51,13 +54,13 @@ class Recipe {
         try {
             if (input.id) {
                 const prev = await this.getById(input.id);
-                if (prev) throw new Error(`La receta ${input.id} ya existe, use otro ID`);
+                if (prev) throw new Error(`Recipe ${input.id} already exist, use another ID`);
             }
             const newRecipe = await model.Recipe.create(input);
             if (input.files && input.files.length > 0) await this.setFiles(newRecipe.id, input.files);
             if (input.categories && input.categories.length > 0) await this.setCategories(newRecipe.id, input.categories);
             if (input.hashtags && input.hashtags.length > 0) await this.setHashtags(newRecipe.id, input.hashtags);
-            //TODO setUtensils
+            if (input.utensils && input.utensils.length > 0) await this.setUtensils(newRecipe.id, input.utensils);
             //TODO setProducts
             return newRecipe;
         } catch (error) {

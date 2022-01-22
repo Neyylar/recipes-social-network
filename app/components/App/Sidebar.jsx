@@ -169,11 +169,11 @@ const Sidebar = ({children}) => {
                     </ListItem>
                     <Collapse in={show.recipesBook} timeout="auto" unmountOnExit>
                         <Fragment>
-                            <Link href={"/recipe-books"} passHref scroll>
+                            <Link href={"/recipes-books"} passHref scroll>
                                 <ListItem
                                     className={classes.childMenu}
                                     button
-                                    selected={router.pathname === '/recipe-books'}
+                                    selected={router.pathname === '/recipes-books'}
                                     onClick={() => setOpen(false)}
                                 >
                                     <ListItemIcon>
@@ -182,11 +182,11 @@ const Sidebar = ({children}) => {
                                     <ListItemText primary={"Explore recipe books"}/>
                                 </ListItem>
                             </Link>
-                            <Link href={"/recipe-books/create"} passHref scroll>
+                            <Link href={"/recipes-books/create"} passHref scroll>
                                 <ListItem
                                     className={classes.childMenu}
                                     button
-                                    selected={router.pathname === '/recipe-books/create'}
+                                    selected={router.pathname === '/recipes-books/create'}
                                     onClick={() => setOpen(false)}
                                 >
                                     <ListItemIcon>

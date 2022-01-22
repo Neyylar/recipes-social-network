@@ -55,12 +55,12 @@ const HomePage = ({initialData}) => {
                                         Create Recipe
                                     </Button>
                                 </Link>
-                                <Link href={"/recipe-books"} passHref scroll>
+                                <Link href={"/recipes-books"} passHref scroll>
                                     <Button variant="outlined" size="medium" style={{marginTop: 8}}>
                                         Recipes Book
                                     </Button>
                                 </Link>
-                                <Link href={"/recipe-books/create"} passHref scroll>
+                                <Link href={"/recipes-books/create"} passHref scroll>
                                     <Button variant="outlined" size="medium" style={{marginTop: 8}}>
                                         Create Recipe Book
                                     </Button>

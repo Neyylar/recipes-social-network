@@ -9,6 +9,7 @@ import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "next/link";
 import MaterialLink from "@material-ui/core/Link";
 import {useRouter} from "next/router";
+import baseConfig from "../../base.config";
 
 const useStyles = makeStyles(theme => ({
     breadcrumb: {
@@ -20,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const RecipeBook= ({initialData}) => {
+const RecipeBookPage = ({initialData}) => {
 
 
     const classes = useStyles(),
@@ -35,7 +36,10 @@ const RecipeBook= ({initialData}) => {
                 <Link href={"/"} scroll passHref>
                     <MaterialLink>Dashboard</MaterialLink>
                 </Link>
-                <Typography>Recipes</Typography>
+                <Link href={"/recipes"} scroll passHref>
+                    <MaterialLink>Recipes Books</MaterialLink>
+                </Link>
+                <Typography>Recipes Book - {recipe?.name}</Typography>
             </Breadcrumbs>
         </Box>
 
@@ -66,9 +70,10 @@ const RecipeBook= ({initialData}) => {
 
 };
 
-RecipeBook.getInitialProps = async ({req}) => {
+RecipeBookPage.getInitialProps = async ({req}) => {
     try {
-        const res = await fetch('http://localhost:4000/recipes');
+        const id = ctx.query ? ctx.query.id : null;
+        const res = await fetch(`${baseConfig.server.url}/recipes-books/${id}`);
         const recipes = await res.json();
         return {
             initialData: {
@@ -80,4 +85,4 @@ RecipeBook.getInitialProps = async ({req}) => {
     }
 }
 
-export default RecipeBook;
+export default RecipeBookPage;

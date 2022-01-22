@@ -8,6 +8,7 @@ import {Card, CardActionArea, CardContent, CardMedia, Grid} from "@material-ui/c
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "next/link";
 import MaterialLink from "@material-ui/core/Link";
+import baseConfig from "../../base.config";
 
 const useStyles = makeStyles(theme => ({
     breadcrumb: {
@@ -19,10 +20,10 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const RecipeBooks= ({initialData}) => {
+const RecipeBooksPage = ({initialData}) => {
 
     const classes = useStyles(),
-        [recipes, setRecipes] = useState(initialData ? initialData.recipes : []);
+        [recipesBooks, setRecipesBooks] = useState(initialData ? initialData.recipesBooks : []);
 
     return <Container maxWidth={'xl'} style={{}}>
         <Head>
@@ -33,27 +34,23 @@ const RecipeBooks= ({initialData}) => {
                 <Link href={"/"} scroll passHref>
                     <MaterialLink>Dashboard</MaterialLink>
                 </Link>
-                <Typography>Recipes</Typography>
+                <Typography>Recipes Books</Typography>
             </Breadcrumbs>
         </Box>
 
         <Grid container spacing={3}>
-            {recipes.map((recipe, index) => <Grid item xs={4}>
+            {recipesBooks?.map((book, index) => <Grid key={index} item xs={4}>
                 <Card sx={{maxWidth: 345}}>
-                    <CardActionArea href={`/recipes/${index}`}>
+                    <CardActionArea href={`/recipes-books/${book.id}`}>
                         <CardMedia
                             component="img"
                             height="140"
-                            image={recipe.files && recipe.files.length > 0 ? recipe.files[0].url : 'https://homechef.imgix.net/https%3A%2F%2Fasset.homechef.com%2Fuploads%2Fmeal%2Fplated%2F4896%2Fsalad4-aa062b86fac073f5d983645756d63818-aa062b86fac073f5d983645756d63818.png?ixlib=rails-1.1.0&w=850&auto=format&s=8d75ce0c54a1a9273ea19d8a8d254a12'}
+                            image={baseConfig.images.recipeDefault}
                             alt={`recipe_pic_${index}`}
                         />
                         <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                {recipe.name}
-                                data
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                {recipe.description}
+                            <Typography gutterBottom variant="h5">
+                                {book.name}
                             </Typography>
                         </CardContent>
                     </CardActionArea>
@@ -64,18 +61,18 @@ const RecipeBooks= ({initialData}) => {
 
 };
 
-RecipeBooks.getInitialProps = async ({req}) => {
-    // try {
-    //     const res = await fetch('http://localhost:4000/recipe-books');
-    //     const recipeBooks = await res.json();
-    //     return {
-    //         initialData: {
-    //             recipeBooks
-    //         }
-    //     }
-    // } catch (error) {
-    //     console.error(error);
-    // }
+RecipeBooksPage.getInitialProps = async ({req}) => {
+    try {
+        const res = await fetch(`${baseConfig.server.url}/recipes-books`);
+        const recipesBooks = await res.json();
+        return {
+            initialData: {
+                recipesBooks
+            }
+        }
+    } catch (error) {
+        console.error(error);
+    }
 }
 
-export default RecipeBooks;
+export default RecipeBooksPage;
