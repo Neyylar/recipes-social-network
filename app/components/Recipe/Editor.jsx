@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -6,16 +6,15 @@ import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import Box from "@material-ui/core/Box";
 import TextField from "@material-ui/core/TextField";
-import {CardMedia, Chip, CircularProgress} from "@material-ui/core";
+import {Chip, CircularProgress} from "@material-ui/core";
 import {useRouter} from "next/router";
 import {useSnackbar} from "notistack";
 import Backdrop from "@material-ui/core/Backdrop";
 import AddIcon from "@material-ui/icons/Add";
 import MaterialLink from "@material-ui/core/Link";
-import {Delete} from "@material-ui/icons";
-import Image from 'next/image';
+import {Book, Delete, LocalOffer, RestaurantMenu} from "@material-ui/icons";
 import baseConfig from "../../base.config";
-import CategoriesSelect from "../Category/Select";
+import DefaultSelect from "../App/DefaultSelect";
 
 const useStyles = makeStyles((theme) => ({
     nameInput: {
@@ -50,8 +49,11 @@ const RecipeCreator = () => {
         [categories, setCategories] = useState([]),
         [tmpCategory, setTmpCategory] = useState(null),
         [hashtags, setHashtags] = useState([]),
+        [tmpHashtag, setTmpHashtag] = useState(null),
         [utensils, setUtensils] = useState([]),
-        [products, setProducts] = useState([]);
+        [tmpUtensil, setTmpUtensil] = useState(null),
+        [products, setProducts] = useState([]),
+        [tmpProduct, setTmpProduct] = useState(null);
 
     const validInputs = pictures.length > 0 && name.length > 3;
 
@@ -59,7 +61,14 @@ const RecipeCreator = () => {
         event.preventDefault();
         if (loading) return;
         const input = {
-            name, description, steps, portions, files: pictures
+            name,
+            description,
+            steps,
+            portions,
+            files: pictures,
+            hashtags: hashtags.map(({id}) => id),
+            categories: hashtags.map(({id}) => id),
+            utensils: hashtags.map(({id}) => id),
         };
         const submitData = async () => {
             const response = await fetch(`${baseConfig.server.url}/recipes`, {
@@ -207,7 +216,12 @@ const RecipeCreator = () => {
                     <Grid item xs={12}>
                         <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
                             <Box flex={1}>
-                                <CategoriesSelect value={tmpCategory} onChange={setTmpCategory}/>
+                                <DefaultSelect
+                                    fetchRoute={'categories'}
+                                    customIcon={<Book/>}
+                                    value={tmpCategory}
+                                    onChange={setTmpCategory}
+                                />
                             </Box>
                             <Box ml={'8px'}>
                                 <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
@@ -222,6 +236,68 @@ const RecipeCreator = () => {
                                 {categories.map((item, index) => <Box key={index} mr={1}>
                                         <Chip label={item.name} onDelete={() => deleteItemFromArr(index, categories, setCategories)}/>
                                 </Box>
+                                )}
+                            </Box>}
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Divider/>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
+                            <Box flex={1}>
+                                <DefaultSelect
+                                    fetchRoute={'hashtags'}
+                                    customIcon={<LocalOffer/>}
+                                    value={tmpHashtag}
+                                    onChange={setTmpHashtag}
+                                />
+                            </Box>
+                            <Box ml={'8px'}>
+                                <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
+                                        onClick={() => {
+                                            addItemToArr(tmpHashtag, hashtags, setHashtags);
+                                            setTmpHashtag(null);
+                                        }}><AddIcon/></Button>
+                            </Box>
+                        </Box>
+                        {hashtags.length > 0 &&
+                            <Box display={'flex'} flexDirection={'row'}>
+                                {hashtags.map((item, index) => <Box key={index} mr={1}>
+                                        <Chip label={item.name} onDelete={() => deleteItemFromArr(index, hashtags, setHashtags)}/>
+                                    </Box>
+                                )}
+                            </Box>}
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Divider/>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
+                            <Box flex={1}>
+                                <DefaultSelect
+                                    fetchRoute={'utensils'}
+                                    customIcon={<RestaurantMenu/>}
+                                    value={tmpUtensil}
+                                    onChange={setTmpUtensil}
+                                />
+                            </Box>
+                            <Box ml={'8px'}>
+                                <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
+                                        onClick={() => {
+                                            addItemToArr(tmpUtensil, utensils, setUtensils);
+                                            setTmpUtensil(null);
+                                        }}><AddIcon/></Button>
+                            </Box>
+                        </Box>
+                        {utensils.length > 0 &&
+                            <Box display={'flex'} flexDirection={'row'}>
+                                {utensils.map((item, index) => <Box key={index} mr={1}>
+                                        <Chip label={item.name} onDelete={() => deleteItemFromArr(index, utensils, setUtensils)}/>
+                                    </Box>
                                 )}
                             </Box>}
                     </Grid>

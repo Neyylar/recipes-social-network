@@ -42,17 +42,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const CategoriesSelect = ({
-                           value,
-                           onChange,
-                           inputProps = {},
-                           variant = 'filled',
-                           required = false,
-                           used = [],
-                           validated = null,
-                           status = null,
-                           ...props
-                       }) => {
+const DefaultSelect = ({
+                              value,
+                              onChange,
+                              inputProps = {},
+                              fetchRoute,
+                              customIcon = <Book/>,
+                              variant = 'filled',
+                              required = false,
+                              used = [],
+                              validated = null,
+                              status = null,
+                              ...props
+                          }) => {
     const classes = useStyles(),
         [loading, setLoading] = useState(false),
         [inputValue, setInputValue] = useState(''),
@@ -60,9 +62,9 @@ const CategoriesSelect = ({
 
     const debouncedInputValue = useDebounce(inputValue, 1000);
 
-    const fetchCategories = useCallback(() => {
+    const fetchOptions = useCallback(() => {
         const fetchData = async () => {
-            const response = await fetch(`${baseConfig.server.url}/categories`);
+            const response = await fetch(`${baseConfig.server.url}/${fetchRoute}`);
             return await response.json();
         }
         setLoading(true);
@@ -77,7 +79,7 @@ const CategoriesSelect = ({
     }, [setLoading, setOptions]);
 
     useEffect(() => {
-        fetchCategories();
+        fetchOptions();
     }, [debouncedInputValue]);
 
     return (
@@ -93,6 +95,7 @@ const CategoriesSelect = ({
             includeInputInList
             filterSelectedOptions
             value={value}
+            loading={loading}
             onChange={(event, newValue) => {
                 onChange(newValue);
             }}
@@ -100,7 +103,7 @@ const CategoriesSelect = ({
                 setInputValue(newInputValue);
             }}
             renderInput={(params) => (
-                <TextField {...params} variant="outlined" fullWidth label={"Search categories..."}
+                <TextField {...params} variant="outlined" fullWidth label={`Search ${fetchRoute}...`}
                            onKeyPress={(e) => {
                                e.key === 'Enter' && e.preventDefault();
                            }}
@@ -110,7 +113,7 @@ const CategoriesSelect = ({
                 return (
                     <Grid container alignItems="center" spacing={2}>
                         <Grid item>
-                            <Book />
+                            {customIcon}
                         </Grid>
                         <Grid item xs>
                             <Typography className={classes.title} variant={"body1"}>
@@ -127,4 +130,4 @@ const CategoriesSelect = ({
     );
 }
 
-export default CategoriesSelect;
+export default DefaultSelect;
