@@ -52,19 +52,20 @@ const RecipeBooksPage = ({initialData}) => {
                     <Card sx={{maxWidth: 345}}>
                         <Link href={`/recipes-books/${book.id}`} Component={CardActionArea}>
                             <Box>
-                            <Box height={'140px'}>
-                                <Grid container spacing={1} style={{backgroundColor: `${theme.palette.primary.main}BB`}}>
-                                    {images.map((item, indexImage) =>
-                                        <Grid key={indexImage} item xs={getGridWidth(indexImage)}>
-                                            <CardMedia
-                                                component="img"
-                                                height={images.length < 3 ? 140 : 70}
-                                                image={item}
-                                                alt={`recipe_pic_${indexImage}`}
-                                            />
-                                        </Grid>
-                                    )}
-                                </Grid>
+                                <Box height={'140px'}>
+                                    <Grid container spacing={1}
+                                          style={{backgroundColor: `${theme.palette.primary.main}BB`}}>
+                                        {images.map((item, indexImage) =>
+                                            <Grid key={indexImage} item xs={getGridWidth(indexImage)}>
+                                                <CardMedia
+                                                    component="img"
+                                                    height={images.length < 3 ? 140 : 70}
+                                                    image={item}
+                                                    alt={`recipe_pic_${indexImage}`}
+                                                />
+                                            </Grid>
+                                        )}
+                                    </Grid>
                             </Box>
 
                             <CardContent>
