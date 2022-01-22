@@ -42,7 +42,7 @@ const RecipesBookCreator = () => {
         [showTextInputErrors, setShowTextInputErrors] = useState(false),
         [name, setName] = useState(''),
         [recipes, setRecipes] = useState([]),
-        [tmpRecipe, setRecipe] = useState(null);
+        [tmpRecipe, setTmpRecipe] = useState(null);
 
     const validInputs = recipes.length > 0 && name.length > 3;
 
@@ -54,7 +54,7 @@ const RecipesBookCreator = () => {
             recipes: recipes.map(({id}) => id),
         };
         const submitData = async () => {
-            const response = await fetch(`${baseConfig.server.url}/recipes`, {
+            const response = await fetch(`${baseConfig.server.url}/recipes-books`, {
                 method: 'POST',
                 body: JSON.stringify(input),
                 headers: {
@@ -67,8 +67,8 @@ const RecipesBookCreator = () => {
         submitData()
             .then(response => {
                 if (response) {
-                    enqueueSnackbar(`Receta ${response.name} created Successfully!`, {variant: 'success'});
-                    router.replace('/recipes/[id]',`/recipes/${response.id}`);
+                    enqueueSnackbar(`Recipes book ${response.name} created Successfully!`, {variant: 'success'});
+                    router.replace('/recipes-books/[id]',`/recipes-books/${response.id}`);
                 }
             })
             .catch(e => {
@@ -76,63 +76,64 @@ const RecipesBookCreator = () => {
                 enqueueSnackbar(e.toString(), {variant: 'error'});
             })
             .finally(() => setLoading(false));
-    }, [name, description, steps, portions, setLoading, loading, pictures, hashtags, categories, utensils]);
+    }, [name, setLoading, loading, recipes]);
 
-    const deleteItemFromArr = (itemIndex, arr, setArr) => {
-        const newArr = [...arr];
-        newArr.splice(itemIndex, 1);
-        setArr(newArr);
-    }
-    const addItemToArr = (newItem, arr, setArr) => {
-        if (!newItem) return;
-        if (typeof newItem === 'object') {
-            if (arr.find(item => item.id === newItem.id)) {
-                enqueueSnackbar(`This item was already added.`, {variant: 'warning'});
-                return;
-            }
-        } else {
-            if (arr.includes(newItem)) {
-                enqueueSnackbar(`This item was already added.`, {variant: 'warning'});
-                return;
-            }
+    const deleteRecipe = useCallback((index) => {
+        const newArr = [...recipes];
+        newArr.splice(index, 1);
+        setRecipes(newArr);
+    }, [recipes, setRecipes]);
+
+    const addRecipe = useCallback(() => {
+        if (!tmpRecipe) return;
+        if (recipes.find(item => item.id === tmpRecipe.id)) {
+            enqueueSnackbar(`This item was already added.`, {variant: 'warning'});
+            return;
         }
-        arr.push(newItem);
-        setArr(arr);
-    }
+        recipes.push(tmpRecipe);
+        setRecipes(recipes);
+        setTmpRecipe(null);
+    }, [recipes, setRecipes, tmpRecipe, recipes, setTmpRecipe]);
 
     return (
         <Box>
             <form onSubmit={onSubmit}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Box>
-                            <img
-                                height="200"
-                                src={pictures.length > 0 ? pictures[0] : 'https://homechef.imgix.net/https%3A%2F%2Fasset.homechef.com%2Fuploads%2Fmeal%2Fplated%2F4896%2Fsalad4-aa062b86fac073f5d983645756d63818-aa062b86fac073f5d983645756d63818.png?ixlib=rails-1.1.0&w=850&auto=format&s=8d75ce0c54a1a9273ea19d8a8d254a12'}
-                                alt={`recipe_pic_alt`}
-                            />
+                        <Box mb={1}>
+                            <TextField value={name} onChange={event => setName(event.target.value)}
+                                       error={showTextInputErrors}
+                                       helperText={showTextInputErrors ? "Max 40 characters" : ""}
+                                       required label={"Name"} type={"text"} name={"name"} className={classes.nameInput}
+                                       autoComplete={"fname"} variant={"outlined"} fullWidth/>
                         </Box>
 
                         <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
-                            <TextField value={tmpPicture} onChange={event => setTmpPicture(event.target.value)}
-                                       error={showTextInputErrors}
-                                       helperText={showTextInputErrors ? "It needs a picture!" : ""}
-                                       label={"Pictures"} type={"text"} name={"picture"}
-                                       className={classes.nameInput}
-                                       autoComplete={"fname"} variant={"outlined"} fullWidth/>
+                            <Box flex={1}>
+                                <DefaultSelect
+                                    fetchRoute={'recipes'}
+                                    customIcon={<Box>
+                                        <img
+                                            width="48"
+                                            height="48"
+                                            src={baseConfig.images.recipeDefault}
+                                            alt={`recipe_pic_alt`}
+                                        />
+                                    </Box>}
+                                    value={tmpRecipe}
+                                    onChange={setTmpRecipe}
+                                />
+                            </Box>
                             <Box ml={'8px'}>
                                 <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
-                                        onClick={() => {
-                                            addItemToArr(tmpPicture, pictures, setPictures);
-                                            setTmpPicture('');
-                                        }}><AddIcon/></Button>
+                                        onClick={addRecipe}><AddIcon/></Button>
                             </Box>
                         </Box>
-                        {pictures.length > 0 &&
+                        {recipes.length > 0 &&
                             <Box display={'flex'} flexDirection={'column'} px={'4px'}
                                  py={'8px'} mt={'8px'} borderRadius={8} border={1} borderColor={'primary'}
                             >
-                                {pictures.map((item, index) =>
+                                {recipes.map((item, index) =>
                                     <Box key={index} display={'flex'} flexDirection={'row'} alignItems={'center'}
                                          justifyContent={'space-between'}
                                          borderTop={index === 0 ? 0 : 1} borderColor={'primary'} py={'4px'}>
@@ -140,142 +141,9 @@ const RecipesBookCreator = () => {
                                             <MaterialLink target={"_blank"} href={item}
                                                           color={"secondary"} style={{wordBreak: 'break-word'}}>{item}</MaterialLink>
                                         </Typography>
-                                        <Button onClick={() => deleteItemFromArr(index, pictures, setPictures)} variant={'contained'} size={'small'}
+                                        <Button onClick={() => deleteRecipe(index)} variant={'contained'} size={'small'}
                                                 color={'primary'}><Delete/></Button>
                                     </Box>)}
-                            </Box>}
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Divider/>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Box mb={2} display={'flex'} alignItems={'center'} flexDirection={'row'}>
-                            <Typography variant={'subtitle2'}>Portions Amount</Typography>
-                            <TextField value={`${portions}`} onChange={event => setPortions(parseInt(event.target.value))}
-                                       error={showTextInputErrors}
-                                       helperText={showTextInputErrors ? "Should be a number!" : ""}
-                                       required label={"Portions"}
-                                       InputProps={{ inputProps: { min: 1, max: 50 } }}
-                                       type={"number"}
-                                       name={"portions"}
-                                       className={classes.nameInput}
-                                       autoComplete={"fname"} variant={"outlined"} fullWidth/>
-                        </Box>
-                        <Box mb={2}>
-                            <TextField value={name} onChange={event => setName(event.target.value)}
-                                       error={showTextInputErrors}
-                                       helperText={showTextInputErrors ? "Max 40 characters" : ""}
-                                       required label={"Name"} type={"text"} name={"name"} className={classes.nameInput}
-                                       autoComplete={"fname"} variant={"outlined"} fullWidth/>
-                        </Box>
-                        <Box mb={2}>
-                            <TextField value={description} onChange={event => setDescription(event.target.value)}
-                                       error={showTextInputErrors}
-                                       helperText={showTextInputErrors ? "" : ""}
-                                       required label={"Description"} type={"text"} name={"description"}
-                                       className={classes.nameInput}
-                                       autoComplete={"fname"} variant={"outlined"} fullWidth multiline rows={2}/>
-                        </Box>
-                        <TextField value={steps} onChange={event => setSteps(event.target.value)}
-                                   error={showTextInputErrors}
-                                   helperText={showTextInputErrors ? "" : ""}
-                                   label={"Preparation steps"} type={"text"} name={"steps"}
-                                   className={classes.nameInput}
-                                   autoComplete={"fname"} variant={"outlined"} fullWidth multiline rows={4}/>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Divider/>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
-                            <Box flex={1}>
-                                <DefaultSelect
-                                    fetchRoute={'categories'}
-                                    customIcon={<Book/>}
-                                    value={tmpCategory}
-                                    onChange={setTmpCategory}
-                                />
-                            </Box>
-                            <Box ml={'8px'}>
-                                <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
-                                        onClick={() => {
-                                            addItemToArr(tmpCategory, categories, setCategories);
-                                            setTmpCategory(null);
-                                        }}><AddIcon/></Button>
-                            </Box>
-                        </Box>
-                        {categories.length > 0 &&
-                            <Box display={'flex'} flexDirection={'row'}>
-                                {categories.map((item, index) => <Box key={index} mr={1}>
-                                        <Chip label={item.name} onDelete={() => deleteItemFromArr(index, categories, setCategories)}/>
-                                </Box>
-                                )}
-                            </Box>}
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Divider/>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
-                            <Box flex={1}>
-                                <DefaultSelect
-                                    fetchRoute={'hashtags'}
-                                    customIcon={<LocalOffer/>}
-                                    value={tmpHashtag}
-                                    onChange={setTmpHashtag}
-                                />
-                            </Box>
-                            <Box ml={'8px'}>
-                                <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
-                                        onClick={() => {
-                                            addItemToArr(tmpHashtag, hashtags, setHashtags);
-                                            setTmpHashtag(null);
-                                        }}><AddIcon/></Button>
-                            </Box>
-                        </Box>
-                        {hashtags.length > 0 &&
-                            <Box display={'flex'} flexDirection={'row'}>
-                                {hashtags.map((item, index) => <Box key={index} mr={1}>
-                                        <Chip label={item.name} onDelete={() => deleteItemFromArr(index, hashtags, setHashtags)}/>
-                                    </Box>
-                                )}
-                            </Box>}
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Divider/>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Box display={'flex'} alignItems={'center'} flexDirection={'row'}>
-                            <Box flex={1}>
-                                <DefaultSelect
-                                    fetchRoute={'utensils'}
-                                    customIcon={<RestaurantMenu/>}
-                                    value={tmpUtensil}
-                                    onChange={setTmpUtensil}
-                                />
-                            </Box>
-                            <Box ml={'8px'}>
-                                <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
-                                        onClick={() => {
-                                            addItemToArr(tmpUtensil, utensils, setUtensils);
-                                            setTmpUtensil(null);
-                                        }}><AddIcon/></Button>
-                            </Box>
-                        </Box>
-                        {utensils.length > 0 &&
-                            <Box display={'flex'} flexDirection={'row'}>
-                                {utensils.map((item, index) => <Box key={index} mr={1}>
-                                        <Chip label={item.name} onDelete={() => deleteItemFromArr(index, utensils, setUtensils)}/>
-                                    </Box>
-                                )}
                             </Box>}
                     </Grid>
 
@@ -290,7 +158,7 @@ const RecipesBookCreator = () => {
                             className={classes.submitButton}
                             variant={"contained"} color={"primary"}
                         >
-                            {!loading && 'Create recipe'}
+                            {!loading && 'Create recipes book'}
                             {loading && <Box display={"flex"} alignItems={"center"}>
                                 <Box mr={"12px"} lineHeight={"18px"}>
                                     <CircularProgress size={18} className={classes.btnProgress}/>

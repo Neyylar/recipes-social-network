@@ -3,7 +3,7 @@ const modelFile = require('../models/File'),
 
 class Recipe {
 
-    static fullFetch = async (data, scope = 'simple') => data ? scope = 'simple' ? ({
+    static fullFetch = async (data, scope = 'simple') => data ? scope === 'simple' ? ({
             ...data,
             files: await this.getFiles(data.id),
         }) : ({
