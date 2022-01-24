@@ -1,4 +1,6 @@
-const modelFile = require('../models/File'),
+const {Op} = require("sequelize"),
+    //Op = Sequelize.Op,
+    modelFile = require('../models/File'),
     model = require('../models/Recipe');
 
 class Recipe {
@@ -32,9 +34,33 @@ class Recipe {
         }
     };
 
+    static processFilter(filter) {
+        let where = {};
+        for (let x in filter) switch (x) {
+            case 'query':
+                where = {
+                    ...where,
+                    [Op.and]: filter.query.trim().split(' ').map(query => ({
+                        [Op.or]: [
+                            {
+                                name: {
+                                    [Op.like]: `%${query}%`
+                                }
+                            }
+                        ]
+                    }))
+                };
+                break;
+            case 'id':
+                if (filter.id) if (filter.id.length) where.id = {[Op.in]: filter.id};
+                break;
+        }
+        return where;
+    }
+
     static count = async (filter = {}) => {
         try {
-            return await model.Recipe.count({});
+            return await model.Recipe.count({where: this.processFilter(filter)});
         } catch (error) {
             console.error(`PU58U55Y - ${error}`);
         }
@@ -42,7 +68,9 @@ class Recipe {
 
     static list = async (filter = {}, options = {}) => {
         try {
-            let data = await model.Recipe.findAll({});
+            let data = await model.Recipe.findAll({where: this.processFilter(filter)});
+            // TODO fetch and filter by categories obj: filter.categories = []
+            // TODO fetch and filter by hashtags obj: filter.hashtags = []
             data = data.map(x => x.get({plain: true}));
             return await this.fullFetchList(data);
         } catch (error) {
@@ -338,9 +366,33 @@ class Hashtag {
         }
     };
 
+    static processFilter(filter) {
+        let where = {};
+        for (let x in filter) switch (x) {
+            case 'query':
+                where = {
+                    ...where,
+                    [Op.and]: filter.query.trim().split(' ').map(query => ({
+                        [Op.or]: [
+                            {
+                                name: {
+                                    [Op.like]: `%${query}%`
+                                }
+                            }
+                        ]
+                    }))
+                };
+                break;
+            case 'id':
+                if (filter.id) if (filter.id.length) where.id = {[Op.in]: filter.id};
+                break;
+        }
+        return where;
+    }
+
     static count = async (filter = {}) => {
         try {
-            return await model.Hashtag.count({});
+            return await model.Hashtag.count({where: this.processFilter(filter)});
         } catch (error) {
             console.error(`PU38U55Y - ${error}`);
         }
@@ -348,7 +400,7 @@ class Hashtag {
 
     static list = async (filter = {}, options = {}) => {
         try {
-            let data = await model.Hashtag.findAll({});
+            let data = await model.Hashtag.findAll({where: this.processFilter(filter)});
             data = data.map(x => x.get({plain: true}));
             return data ? data : [];
         } catch (error) {
@@ -440,9 +492,33 @@ class Category {
         }
     };
 
+    static processFilter(filter) {
+        let where = {};
+        for (let x in filter) switch (x) {
+            case 'query':
+                where = {
+                    ...where,
+                    [Op.and]: filter.query.trim().split(' ').map(query => ({
+                        [Op.or]: [
+                            {
+                                name: {
+                                    [Op.like]: `%${query}%`
+                                }
+                            }
+                        ]
+                    }))
+                };
+                break;
+            case 'id':
+                if (filter.id) if (filter.id.length) where.id = {[Op.in]: filter.id};
+                break;
+        }
+        return where;
+    }
+
     static count = async (filter = {}) => {
         try {
-            return await model.Category.count({});
+            return await model.Category.count({where: this.processFilter(filter)});
         } catch (error) {
             console.error(`AU58U55Y - ${error}`);
         }
@@ -450,7 +526,7 @@ class Category {
 
     static list = async (filter = {}, options = {}) => {
         try {
-            let data = await model.Category.findAll({});
+            let data = await model.Category.findAll({where: this.processFilter(filter)});
             data = data.map(x => x.get({plain: true}));
             return data ? data : [];
         } catch (error) {

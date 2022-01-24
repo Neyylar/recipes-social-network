@@ -21,15 +21,19 @@ const useStyles = makeStyles((theme) => ({
         '& input': {
             textTransform: 'capitalize'
         }
-    }, emailInput: {
+    },
+    emailInput: {
         '& input': {
             textTransform: 'lowerCase'
         }
-    }, addPictureButton: {
+    },
+    addPictureButton: {
         borderRadius: 25, padding: 8, minWidth: 24
-    }, submitButton: {
+    },
+    submitButton: {
         width: '100%'
-    }, backdrop: {
+    },
+    backdrop: {
         zIndex: theme.zIndex.modal + 1
     }
 }));
@@ -125,7 +129,7 @@ const RecipeCreator = () => {
                         <Box>
                             <img
                                 height="200"
-                                src={pictures.length > 0 ? pictures[0] : 'https://homechef.imgix.net/https%3A%2F%2Fasset.homechef.com%2Fuploads%2Fmeal%2Fplated%2F4896%2Fsalad4-aa062b86fac073f5d983645756d63818-aa062b86fac073f5d983645756d63818.png?ixlib=rails-1.1.0&w=850&auto=format&s=8d75ce0c54a1a9273ea19d8a8d254a12'}
+                                src={pictures.length > 0 ? pictures[0] : baseConfig.images.recipeDefault}
                                 alt={`recipe_pic_alt`}
                             />
                         </Box>

@@ -2,7 +2,8 @@ const recipe = require('../lib/Recipe');
 
 module.exports = {
     async recipes(req, res) {
-        const recipes = await recipe.Recipe.list();
+        const filter = req.query ? req.query : {};
+        const recipes = await recipe.Recipe.list(filter);
         res.json(recipes);
     },
     async recipe(req, res) {
@@ -23,12 +24,13 @@ module.exports = {
         res.json(response);
     },
     async categories(req, res) {
-        const categories = await recipe.Category.list();
+        const filter = req.query ? req.query : {};
+        const categories = await recipe.Category.list(filter);
         res.json(categories);
     },
     async createCategory(req, res) {
-        const newHashtag = await recipe.Category.create(req.body);
-        res.json(newHashtag);
+        const category = await recipe.Category.create(req.body);
+        res.json(category);
     },
     async updateCategory(req, res) {
         const input = {...req.body, id: req.params.id};
@@ -40,7 +42,8 @@ module.exports = {
         res.json(response);
     },
     async hashtags(req, res) {
-        const hashtags = await recipe.Hashtag.list();
+        const filter = req.query ? req.query : {};
+        const hashtags = await recipe.Hashtag.list(filter);
         res.json(hashtags);
     },
     async createHashtag(req, res) {
