@@ -69,9 +69,24 @@ class Recipe {
     static list = async (filter = {}, options = {}) => {
         try {
             let data = await model.Recipe.findAll({where: this.processFilter(filter)});
-            // TODO fetch and filter by categories obj: filter.categories = []
-            // TODO fetch and filter by hashtags obj: filter.hashtags = []
             data = data.map(x => x.get({plain: true}));
+            // TODO optimize filter methods
+            if (filter.categories && filter.categories.length > 0) {
+                const where = {categoryId: {[Op.in]: Array.isArray(filter.categories) ? filter.categories : [filter.categories]}};
+                let categoriesRecipes = await model.RecipeCategory.findAll({
+                    where,
+                });
+                categoriesRecipes = categoriesRecipes.map(x => x.get({plain: true}).recipeId);
+                data = data.filter(recipe => categoriesRecipes.includes(recipe.id));
+            }
+            if (filter.hashtags && filter.hashtags.length > 0) {
+                const where = {hashtagId: {[Op.in]: Array.isArray(filter.hashtags) ? filter.hashtags : [filter.hashtags]}};
+                let hashtagsRecipes = await model.RecipeHashtag.findAll({
+                    where
+                });
+                hashtagsRecipes = hashtagsRecipes.map(x => x.get({plain: true}).recipeId);
+                data = data.filter(recipe => hashtagsRecipes.includes(recipe.id));
+            }
             return await this.fullFetchList(data);
         } catch (error) {
             console.error(`IDFMPKX7 - ${error}`);
@@ -459,9 +474,33 @@ class Utensil {
         }
     };
 
+    static processFilter(filter) {
+        let where = {};
+        for (let x in filter) switch (x) {
+            case 'query':
+                where = {
+                    ...where,
+                    [Op.and]: filter.query.trim().split(' ').map(query => ({
+                        [Op.or]: [
+                            {
+                                name: {
+                                    [Op.like]: `%${query}%`
+                                }
+                            }
+                        ]
+                    }))
+                };
+                break;
+            case 'id':
+                if (filter.id) if (filter.id.length) where.id = {[Op.in]: filter.id};
+                break;
+        }
+        return where;
+    }
+
     static count = async (filter = {}) => {
         try {
-            return await model.Utensil.count({});
+            return await model.Utensil.count({where: this.processFilter(filter)});
         } catch (error) {
             console.error(`PU58455Y - ${error}`);
         }
@@ -469,11 +508,47 @@ class Utensil {
 
     static list = async (filter = {}, options = {}) => {
         try {
-            let data = await model.Utensil.findAll({});
+            let data = await model.Utensil.findAll({where: this.processFilter(filter)});
             data = data.map(x => x.get({plain: true}));
             return data ? data : [];
         } catch (error) {
             console.error(`IDFMPK77 - ${error}`);
+        }
+    };
+
+    static create = async (input) => {
+        try {
+            if (input.id) {
+                const prev = await this.getById(input.id);
+                if (prev) throw new Error(`utensil ${input.id} already exist, use another ID`);
+            }
+            return await model.Utensil.create(input);
+        } catch (error) {
+            console.error(`0MH48HMP - ${error}`);
+        }
+    };
+
+    static update = async (input) => {
+        try {
+            if (!input.id) throw new Error(`No se encontró el ID de utensil`);
+            const prev = await this.getById(input.id);
+            if (!prev) throw new Error(`utensil ${input.id} no existe`);
+            await model.Utensil.update(input, {where: {id: input.id}});
+            const data = await this.getById(input.id);
+            return data;
+        } catch (error) {
+            console.error(`E4Y7UT22 - ${error}`);
+        }
+    };
+
+    static delete = async (id) => {
+        try {
+            const prev = await this.getById(id);
+            if (!prev) return false;
+            await model.Utensil.destroy({where: {id}});
+            return true;
+        } catch (error) {
+            console.error(`45M96D5R - ${error}`);
         }
     };
 }
@@ -538,11 +613,11 @@ class Category {
         try {
             if (input.id) {
                 const prev = await this.getById(input.id);
-                if (prev) throw new Error(`Category ${input.id} already exist, use another ID`);
+                if (prev) throw new Error(`category ${input.id} already exist, use another ID`);
             }
             return await model.Category.create(input);
         } catch (error) {
-            console.error(`0MH48HMP - ${error}`);
+            console.error(`0MH45HMP - ${error}`);
         }
     };
 
@@ -550,12 +625,12 @@ class Category {
         try {
             if (!input.id) throw new Error(`No se encontró el ID de category`);
             const prev = await this.getById(input.id);
-            if (!prev) throw new Error(`La receta ${input.id} no existe`);
+            if (!prev) throw new Error(`category ${input.id} doesnt exist`);
             await model.Category.update(input, {where: {id: input.id}});
             const data = await this.getById(input.id);
             return data;
         } catch (error) {
-            console.error(`E4Y7UT22 - ${error}`);
+            console.error(`E4Y8UT22 - ${error}`);
         }
     };
 
@@ -566,7 +641,7 @@ class Category {
             await model.Category.destroy({where: {id}});
             return true;
         } catch (error) {
-            console.error(`45M96D5R - ${error}`);
+            console.error(`45M96D54 - ${error}`);
         }
     };
 }

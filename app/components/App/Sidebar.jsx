@@ -21,7 +21,7 @@ import ListIcon from '@material-ui/icons/List';
 import AddIcon from "@material-ui/icons/Add";
 import Collapse from "@material-ui/core/Collapse";
 import Divider from "@material-ui/core/Divider";
-import {AccountCircle, Class, LocalOffer, MenuBook, Restaurant} from "@material-ui/icons";
+import {AccountCircle, Class, LocalOffer, MenuBook, Restaurant, RestaurantMenu} from "@material-ui/icons";
 import {useSnackbar} from "notistack";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -212,6 +212,14 @@ const Sidebar = ({children}) => {
                                 <LocalOffer/>
                             </ListItemIcon>
                             <ListItemText primary={"Hashtags"}/>
+                        </ListItem>
+                    </Link>
+                    <Link href={"/utensils"} passHref scroll>
+                        <ListItem button selected={router.pathname === '/utensils'} onClick={() => setOpen(false)}>
+                            <ListItemIcon>
+                                <RestaurantMenu/>
+                            </ListItemIcon>
+                            <ListItemText primary={"Utensils"}/>
                         </ListItem>
                     </Link>
                 </List>

@@ -60,8 +60,22 @@ module.exports = {
         res.json(response);
     },
     async utensils(req, res) {
-        const utensils = await recipe.Utensil.list();
+        const filter = req.query ? req.query : {};
+        const utensils = await recipe.Utensil.list(filter);
         res.json(utensils);
+    },
+    async createUtensil(req, res) {
+        const newUtensil = await recipe.Utensil.create(req.body);
+        res.json(newUtensil);
+    },
+    async updateUtensil(req, res) {
+        const input = {...req.body, id: req.params.id};
+        const updatedRecipe = await recipe.Utensil.update(input);
+        res.json(updatedRecipe);
+    },
+    async deleteUtensil(req, res) {
+        const response = await recipe.Utensil.delete(req.params.id);
+        res.json(response);
     },
     async measures(req, res) {
         const measures = await recipe.Measure.list();

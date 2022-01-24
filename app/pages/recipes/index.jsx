@@ -55,11 +55,11 @@ const RecipesPage = ({initialData}) => {
 
     const showFiltersBadge = filters.hashtags?.length > 0 || filters.categories?.length > 0 || filters.query !== '';
 
-    const getUrlParams = () => {
+    const getUrlParams = useCallback(() => {
         const _categories = filters.categories.map(item => item.id);
         const _hashtags = filters.hashtags.map(item => item.id);
         return querystring.stringify({query: filters.query, categories: _categories, hashtags: _hashtags});
-    }
+    }, [filters]);
 
     const fetchAll = useCallback(() => {
         const fetchData = async () => {
@@ -75,13 +75,13 @@ const RecipesPage = ({initialData}) => {
                 console.error(e);
             })
             .finally(() => setLoading(false));
-    }, [setLoading, setRecipes, debouncedQuery]);
+    }, [setLoading, setRecipes, getUrlParams]);
 
     useEffect(() => {
         fetchAll();
         const url = `${router.pathname}?${getUrlParams()}`;
         router.replace(url, url, {shallow: true});
-    }, [debouncedQuery, filters.categories, filters.hashtags]);
+    }, [initialData, debouncedQuery, filters.categories, filters.hashtags]);
 
     return <Container maxWidth={'xl'} style={{}}>
         <Head>
@@ -168,14 +168,21 @@ const RecipesPage = ({initialData}) => {
 
 };
 
-RecipesPage.getInitialProps = async ({req}) => {
+RecipesPage.getInitialProps = async (ctx) => {
     try {
         const _query = ctx.query ? (ctx.query.query ? ctx.query.query : '') : '';
+        const _categories = ctx.query ? (ctx.query.categories ? (typeof ctx.query.categories === 'string' ? [ctx.query.categories] : ctx.query.categories) : []) : [];
+        const _hashtags = ctx.query ? (ctx.query.hashtags ? (typeof ctx.query.hashtags === 'string' ? [ctx.query.hashtags] : ctx.query.hashtags) : []) : [];
         const res = await fetch(`${baseConfig.server.url}/recipes?query=${_query}`);
         const recipes = await res.json();
         return {
             initialData: {
-                recipes
+                recipes,
+                filters: {
+                    query: _query,
+                    hashtags: _hashtags,
+                    categories: _categories,
+                }
             }
         }
     } catch (error) {

@@ -71,7 +71,7 @@ const EntityEditorDialog = ({entity, routeName, open, onSuccessVerify, handleClo
             .then(response => {
                 if (response) {
                     if (onSuccessVerify) onSuccessVerify(response);
-                    enqueueSnackbar(`${response.name} created Successfully!`, {variant: 'success'});
+                    enqueueSnackbar(`${response.name} ${isEditing ? 'updated' : 'created'} Successfully!`, {variant: 'success'});
                     handleClose();
                 }
             })

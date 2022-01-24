@@ -26,6 +26,10 @@ router.patch('/hashtags/:id', RecipeController.updateHashtag);
 router.delete('/hashtags/:id', RecipeController.deleteHashtag);
 
 router.get('/utensils', RecipeController.utensils);
+router.post('/utensils', RecipeController.createUtensil);
+router.patch('/utensils/:id', RecipeController.updateUtensil);
+router.delete('/utensils/:id', RecipeController.deleteUtensil);
+
 router.get('/measures', RecipeController.measures);
 router.get('/products', RecipeController.products);
 
