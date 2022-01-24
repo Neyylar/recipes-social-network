@@ -108,8 +108,8 @@ const RecipePage = ({initialData}) => {
                                         </Grid>
                                     </Grid>
                                         <Box mt={'5px'} ml={'5px'}>
-                                            {recipe?.steps.trim().split ('\n').map(item =>
-                                                <Typography variant="h6" color={"secondary"}>
+                                            {recipe?.steps.trim().split ('\n').map((item, index) =>
+                                                <Typography key={index} variant="h6" color={"secondary"}>
                                                     <ArrowRightIcon/>
                                                     {item}
                                                 </Typography>
@@ -123,8 +123,11 @@ const RecipePage = ({initialData}) => {
                                                         Products
                                                     </Typography>
                                                 </ListItem>
-                                                {recipe?.products?.map(({id, name}) =>
-                                                    <ListItem color={"secondary"} style={{backgroundColor: theme.palette.primary.main, opacity: "65%"}}>
+                                                {recipe?.products?.map(({id, name}, index) =>
+                                                    <ListItem key={index} color={"secondary"} style={{
+                                                        backgroundColor: theme.palette.primary.main,
+                                                        opacity: "65%"
+                                                    }}>
                                                         <KitchenIcon/>
                                                         <ListItemText variant="overline" primary={name}/>
                                                     </ListItem>
@@ -138,10 +141,12 @@ const RecipePage = ({initialData}) => {
                                                         Utensils
                                                     </Typography>
                                                 </ListItem>
-                                                {recipe?.utensils?.map(({id, name}) =>
-                                                    <ListItem color={"secondary"} style={{backgroundColor: theme.palette.primary.main, opacity: "65%"}}>
-                                                        <DetailsIcon />
-
+                                                {recipe?.utensils?.map(({id, name}, index) =>
+                                                    <ListItem key={index} color={"secondary"} style={{
+                                                        backgroundColor: theme.palette.primary.main,
+                                                        opacity: "65%"
+                                                    }}>
+                                                        <DetailsIcon/>
                                                         <ListItemText primary={name}/>
                                                     </ListItem>
                                                 )}
@@ -149,16 +154,20 @@ const RecipePage = ({initialData}) => {
                                         </Grid>
                                     </Grid>
                                     <Box mt={'2px'} display={"flex"} flexDirection={"row"}>
-                                        {recipe?.hashtags?.map(({id, name}) =>
-                                            <Box mr = {'10px'} >
-                                                <Chip variant="outlined" color={"primary"} label={`#${name}`}/>
+                                        {recipe?.hashtags?.map(({id, name}, index) =>
+                                            <Box key={index} mr={'10px'}>
+                                                <Link href={`/recipes?hashtags=${id}`} passHref>
+                                                    <Chip clickable variant="outlined" color={"primary"} label={`#${name}`}/>
+                                                </Link>
                                             </Box>
                                         )}
                                     </Box>
                                     <Box mt={'15px'} display={"flex"} flexDirection={"row"}>
-                                        {recipe?.categories?.map(({name}) =>
-                                            <Box mr={'10px'}>
-                                                <Chip label={name}/>
+                                        {recipe?.categories?.map(({id, name}, index) =>
+                                            <Box key={index} mr={'10px'}>
+                                                <Link href={`/recipes?categories=${id}`} passHref>
+                                                    <Chip clickable label={name}/>
+                                                </Link>
                                             </Box>
                                         )}
                                     </Box>

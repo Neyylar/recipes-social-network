@@ -139,7 +139,6 @@ const RecipeCreator = () => {
                                        error={showTextInputErrors}
                                        helperText={showTextInputErrors ? "It needs a picture!" : ""}
                                        label={"Pictures"} type={"text"} name={"picture"}
-                                       className={classes.nameInput}
                                        autoComplete={"fname"} variant={"outlined"} fullWidth/>
                             <Box ml={'8px'}>
                                 <Button variant={"contained"} color={"primary"} className={classes.addPictureButton}
@@ -189,7 +188,7 @@ const RecipeCreator = () => {
                                        error={showTextInputErrors}
                                        helperText={showTextInputErrors ? "Max 40 characters" : ""}
                                        required label={"Name"} type={"text"} name={"name"} className={classes.nameInput}
-                                       autoComplete={"fname"} variant={"outlined"} fullWidth/>
+                                       variant={"outlined"} fullWidth/>
                         </Box>
                         <Box mb={2}>
                             <TextField value={description} onChange={event => setDescription(event.target.value)}

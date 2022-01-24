@@ -25,6 +25,7 @@ import useDebounce from "../../components/App/hooks/useDebounce";
 import {useRouter} from "next/router";
 import querystring from "querystring";
 import RecipesFilterDialog from "../../components/Recipe/FilterDialog";
+import useUpdateEffect from "../../components/App/hooks/useUpdateEffect";
 
 const useStyles = makeStyles(theme => ({
     breadcrumb: {
@@ -81,7 +82,7 @@ const RecipesPage = ({initialData}) => {
         fetchAll();
         const url = `${router.pathname}?${getUrlParams()}`;
         router.replace(url, url, {shallow: true});
-    }, [initialData, debouncedQuery, filters.categories, filters.hashtags]);
+    }, [initialData, debouncedQuery, filters.categories, filters.hashtags, getUrlParams]);
 
     return <Container maxWidth={'xl'} style={{}}>
         <Head>
@@ -149,7 +150,7 @@ const RecipesPage = ({initialData}) => {
                                     {recipe.name}
                                     data
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" color="secondary">
                                     {recipe.description}
                                 </Typography>
                             </CardContent>
@@ -180,8 +181,8 @@ RecipesPage.getInitialProps = async (ctx) => {
                 recipes,
                 filters: {
                     query: _query,
-                    hashtags: _hashtags,
-                    categories: _categories,
+                    hashtags: _hashtags.map(item => ({id: item, name: item})),
+                    categories: _categories.map(item => ({id: item, name: item})),
                 }
             }
         }

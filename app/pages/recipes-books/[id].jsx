@@ -60,7 +60,7 @@ const RecipeBookPage = ({initialData}) => {
                                 <Typography gutterBottom variant="h5" component="div">
                                     {recipe.name}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" color="secondary">
                                     {recipe.description}
                                 </Typography>
                             </CardContent>
